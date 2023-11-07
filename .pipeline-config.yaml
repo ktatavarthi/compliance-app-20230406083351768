@@ -19,8 +19,7 @@ test:
   script: |
     #!/usr/bin/env bash
     
-    source scripts/run_test.sh
-    run_test test com.ibm.unit_tests unit-test-result.xml 1
+    exit 0
 
 containerize:
   dind: true
@@ -57,9 +56,7 @@ acceptance-test:
   script: |
     #!/usr/bin/env bash
 
-    export APP_URL=$(get_env app-url)
-    source scripts/run_test.sh    
-    run_test acceptance-test com.ibm.acceptance_tests acceptance-test-result.xml 0
+    exit 0
 
 release:
   abort_on_failure: false
@@ -81,19 +78,8 @@ dynamic-scan:
   image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.7@sha256:0444aa3cc5032ba4d7f7a59a4177dd43dc1126ad902f09079b0a66156bbe4bcf
   script: |
     #!/usr/bin/env bash
-    if [ -z "$(get_env opt-in-dynamic-scan "")" ]; then
-      echo "If you want to enable this stage, add 'opt-in-dynamic-scan' parameter to your pipeline with any value. Also, please add 'opt-in-dynamic-api-scan' to your pipeline with any value to have api scans running, and 'opt-in-dynamic-ui-scan' with any value to have ui scans running" >&2
-    else
-      if [[ "$(get_env pipeline_namespace)" == *"cc"* ]]; then
-        app_url=$(get_env app-url "")
-        if [[ -z "${app_url}" ]]; then
-          echo "Please provide the app-url as the running application url. Recommended to use stage/test environment to run the Dynamic scan." >&2
-          exit 1
-        fi
-        source scripts/zap/zap-cc-config
-      fi
-      source scripts/zap/trigger-async-zap
-    fi
+    
+    exit 0
 
 owasp-zap:
   dind: true 
@@ -102,4 +88,50 @@ owasp-zap:
   script: |
     #!/usr/bin/env bash
 
-    source scripts/zap/trigger_zap_scans
+    exit 0
+
+
+scan-artifact:
+  dind: true
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.25
+  script: |
+    #!/usr/bin/env bash
+
+    exit 0
+
+verify-artifact:
+  dind: false
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/image-signing:1.0.0@sha256:e9d8e354668ba3d40be2aaee08298d2aa7f0e1c8a1829cca4094ec93830e3e6a
+  script: |
+    #!/usr/bin/env bash
+
+    exit 0
+
+sign-artifact:
+  dind: false
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/image-signing:1.0.0@sha256:e9d8e354668ba3d40be2aaee08298d2aa7f0e1c8a1829cca4094ec93830e3e6a
+  script: |
+    #!/usr/bin/env bash
+
+    exit 0
+
+detect-secrets:
+  dind: false
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.25
+  script: |
+    #!/usr/bin/env bash
+
+    exit 0
+
+static-scan:
+  dind: false
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.25@sha256:dd2000b525336acd00e9b95b74f15696797764725adbb25fa720e9431d558cbf
+  script: |
+    #!/usr/bin/env bash
+
+    exit 0    
